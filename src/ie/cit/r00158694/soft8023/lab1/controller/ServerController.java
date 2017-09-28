@@ -7,7 +7,7 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.Client;
+import ie.cit.r00158694.soft8023.lab1.model.IClient;
 import ie.cit.r00158694.soft8023.lab1.model.Monitor;
 
 import javafx.application.Platform;
@@ -18,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -34,7 +35,7 @@ public class ServerController {
 	private ResourceBundle resources;
 
 	@FXML
-	private ListView<Client> listClients;
+	private ListView<IClient> listClients;
 
 	@FXML
 	private Button btnAddClient;
@@ -47,7 +48,7 @@ public class ServerController {
 
 	private Monitor monitor;
 
-	private final Map<Client, Stage> clientStageMap = new HashMap<>();
+	private final Map<IClient, Stage> clientStageMap = new HashMap<>();
 
 	@FXML
 	void initialize() {
@@ -56,6 +57,13 @@ public class ServerController {
 		btnViewClient.disableProperty().bind(isNull);
 
 		listClients.setPlaceholder(new Text(resources.getString("server.clientList.empty")));
+		listClients.setCellFactory(param -> new ListCell<IClient>() {
+			@Override
+			protected void updateItem(IClient item, boolean empty) {
+				super.updateItem(item, empty);
+				if (!empty) setText(item.getClientName());
+			}
+		});
 
 		Platform.runLater(() -> btnAddClient.requestFocus());
 	}
@@ -91,7 +99,7 @@ public class ServerController {
 
 	@FXML
 	void removeClient(ActionEvent event) {
-		Client client = listClients.getSelectionModel().getSelectedItem();
+		IClient client = listClients.getSelectionModel().getSelectedItem();
 
 		if (clientStageMap.containsKey(client)) clientStageMap.remove(client).close();
 
@@ -101,7 +109,7 @@ public class ServerController {
 
 	@FXML
 	void viewClient(ActionEvent event) {
-		Client client = listClients.getSelectionModel().getSelectedItem();
+		IClient client = listClients.getSelectionModel().getSelectedItem();
 
 		if (clientStageMap.containsKey(client)) {
 			clientStageMap.get(client).requestFocus();

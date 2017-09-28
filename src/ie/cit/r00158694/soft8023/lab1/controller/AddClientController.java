@@ -7,7 +7,8 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.Client;
+import ie.cit.r00158694.soft8023.lab1.model.BasicClient;
+import ie.cit.r00158694.soft8023.lab1.model.IClient;
 import ie.cit.r00158694.soft8023.lab1.model.Monitor;
 
 import javafx.event.ActionEvent;
@@ -19,7 +20,7 @@ import javafx.stage.Stage;
 
 import java.util.Optional;
 
-public class AddClientController implements ReturnValue<Client> {
+public class AddClientController implements ReturnValue<IClient> {
 
 	@FXML
 	private TextField txtClientName;
@@ -27,19 +28,20 @@ public class AddClientController implements ReturnValue<Client> {
 	@FXML
 	private Button btnSave;
 
-	private Client client;
+	private IClient client;
 	private Monitor monitor;
 
 	@FXML
 	void initialize() {
 		txtClientName.textProperty().addListener((observable, oldValue, newValue) -> {
-			boolean disable = txtClientName.getText().isEmpty() || monitor.getFiles().contains(txtClientName.getText());
+			boolean disable = txtClientName.getText().isEmpty() || monitor.getClients().stream().anyMatch(client -> client.getClientName().equals(txtClientName.getText()));
 			btnSave.setDisable(disable);
-		}); }
+		});
+	}
 
 	@FXML
 	void saveData(ActionEvent event) {
-		client = new Client(txtClientName.getText());
+		client = new BasicClient(txtClientName.getText(), monitor);
 		closeDialog(event);
 	}
 
@@ -51,7 +53,7 @@ public class AddClientController implements ReturnValue<Client> {
 	}
 
 	@Override
-	public Optional<Client> getReturnValue() { return Optional.ofNullable(client); }
+	public Optional<IClient> getReturnValue() { return Optional.ofNullable(client); }
 
 	public void setMonitor(Monitor monitor) { this.monitor = monitor; }
 }

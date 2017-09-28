@@ -7,7 +7,7 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.Client;
+import ie.cit.r00158694.soft8023.lab1.model.IClient;
 import ie.cit.r00158694.soft8023.lab1.model.Monitor;
 
 import javafx.application.Platform;
@@ -18,6 +18,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -61,7 +63,7 @@ public class ViewClientController {
 	private TextArea txtLog;
 
 	private Monitor monitor;
-	private Client client;
+	private IClient client;
 
 	@FXML
 	void initialize() {
@@ -74,8 +76,9 @@ public class ViewClientController {
 		colStatus.setCellValueFactory(param -> {
 			SimpleStringProperty property = new SimpleStringProperty();
 			if (monitor.getLockedFiles().containsValue(param.getValue())) {
-				String clientsLockingFile = monitor.getLockedFiles().entrySet().stream().filter(entry -> entry.getValue().equals(param.getValue())).map(Entry::getKey).map(Client::toString).sorted()
-						.reduce((s, s2) -> s + ", " + s2).orElse("");
+				String clientsLockingFile =
+						monitor.getLockedFiles().entrySet().stream().filter(entry -> entry.getValue().equals(param.getValue())).map(Entry::getKey).map(IClient::getClientName).sorted()
+								.reduce((s, s2) -> s + ", " + s2).orElse("");
 				property.setValue(String.format(resources.getString("file.status.locked"), clientsLockingFile));
 			} else {
 				property.setValue(resources.getString("file.status.unlocked"));
@@ -111,7 +114,9 @@ public class ViewClientController {
 			stage.setScene(new Scene(root));
 			stage.showAndWait();
 
-			controller.getReturnValue().ifPresent(file -> monitor.addFile(client, file));
+			controller.getReturnValue().ifPresent(file -> {
+				if (!monitor.addFile(client, file)) showAlert("dialog.notAdded");
+			});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -120,19 +125,19 @@ public class ViewClientController {
 	@FXML
 	void removeFile(ActionEvent event) {
 		String file = tableFiles.getSelectionModel().getSelectedItem();
-		monitor.removeFile(client, file);
+		if (!monitor.removeFile(client, file)) showAlert("dialog.notRemoved");
 	}
 
 	@FXML
 	void playFile(ActionEvent event) {
 		String file = tableFiles.getSelectionModel().getSelectedItem();
-		monitor.playFile(client, file);
+		if (!monitor.playFile(client, file)) showAlert("dialog.notPlayed");
 	}
 
 	@FXML
 	void stopFile(ActionEvent event) {
 		String file = tableFiles.getSelectionModel().getSelectedItem();
-		monitor.stopPlayingFile(client, file);
+		if (!monitor.stopPlayingFile(client, file)) showAlert("dialog.notStopped");
 	}
 
 	public void setMonitor(Monitor monitor) {
@@ -140,14 +145,21 @@ public class ViewClientController {
 		tableFiles.getItems().setAll(monitor.getFiles());
 	}
 
-	public void setClient(Client client) {
+	public void setClient(IClient client) {
 		this.client = client;
 		txtLog.setText("     −=≡ This client has subscribed to the folder monitor ≡=−");
 		client.setOnUpdate(event -> {
 			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-			txtLog.appendText('\n' + String.format(resources.getString(event.getAction().getKey()), format.format(event.getDate()), event.getClient(), event.getFile()));
+			txtLog.appendText('\n' + String.format(resources.getString(event.getAction().getKey()), format.format(event.getDate()), event.getClient().getClientName(), event.getFile()));
 
 			tableFiles.getItems().setAll(monitor.getFiles());
 		});
+	}
+
+	private void showAlert(String key) {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setHeaderText(null);
+		alert.setContentText(resources.getString(key));
+		alert.show();
 	}
 }

@@ -9,24 +9,45 @@ package ie.cit.r00158694.soft8023.lab1.model;
 
 import java.util.Date;
 
-public class Event {
-	private final Client client;
+public class UpdateEvent {
+
+	private final IClient client;
 	private final Action action;
 	private final String file;
 	private final Date time;
 
-	public Event(Client client, Action action, String file) {
+	public UpdateEvent(IClient client, Action action, String file) {
 		this.client = client;
 		this.action = action;
 		this.file = file;
 		this.time = new Date();
 	}
 
-	public Client getClient() { return client; }
+	/**
+	 * Return the client that caused the update
+	 *
+	 * @return The client
+	 */
+	public IClient getClient() { return client; }
 
+	/**
+	 * Returns the action that the client executed to cause the update.
+	 *
+	 * @return The action
+	 */
 	public Action getAction() { return action; }
 
+	/**
+	 * Returns the file over which the client executed the action to caused the update
+	 *
+	 * @return The file
+	 */
 	public String getFile() { return file; }
 
+	/**
+	 * Returns the date at which the client executed the action that caused the update
+	 *
+	 * @return The date
+	 */
 	public Date getDate() { return time; }
 }

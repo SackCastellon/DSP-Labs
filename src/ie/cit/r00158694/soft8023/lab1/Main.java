@@ -7,41 +7,39 @@
 
 package ie.cit.r00158694.soft8023.lab1;
 
-import ie.cit.r00158694.soft8023.lab1.controller.ServerController;
+import ie.cit.r00158694.soft8023.lab1.model.BasicClient;
 import ie.cit.r00158694.soft8023.lab1.model.Monitor;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+public class Main {
 
-import java.io.IOException;
-import java.util.ResourceBundle;
+	public static void main(String[] args) {
 
-public class Main extends Application {
+		Monitor monitor = Monitor.getInstance();
 
-	private static final ResourceBundle resources = ResourceBundle.getBundle("ie.cit.r00158694.soft8023.lab1.i18n");
+		BasicClient client1 = new BasicClient("Pepe", monitor);
+		BasicClient client2 = new BasicClient("Jose", monitor);
+		BasicClient client3 = new BasicClient("Luis", monitor);
 
-	@Override
-	public void start(Stage primaryStage) {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/view/Server.fxml"));
-			loader.setResources(resources);
-
-			Parent root = loader.load();
-
-			ServerController controller = loader.getController();
-			controller.setMonitor(Monitor.getInstance());
-
-			primaryStage.setTitle(resources.getString("server.title"));
-			primaryStage.setScene(new Scene(root));
-			primaryStage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		monitor.addFile(client1, "Hello");
+		System.out.println();
+		monitor.playFile(client2, "Hello");
+		System.out.println();
+		monitor.addFile(client2, "Animals");
+		System.out.println();
+		monitor.playFile(client1, "Hello");
+		System.out.println();
+		monitor.stopPlayingFile(client2, "Hello");
+		System.out.println();
+		monitor.addFile(client3, "Apollo");
+		System.out.println();
+		monitor.addFile(client2, "Burn");
+		System.out.println();
+		monitor.removeFile(client1, "Hello");
+		System.out.println();
+		monitor.playFile(client3, "Burn");
+		System.out.println();
+		monitor.removeFile(client1, "Apollo");
+		System.out.println();
+		monitor.stopPlayingFile(client3, "Burn");
 	}
-
-	public static void main(String[] args) { launch(args); }
 }

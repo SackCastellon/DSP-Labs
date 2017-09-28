@@ -18,49 +18,51 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
-<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ie.cit.r00158694.soft8023.lab1.controller.ViewClientController">
-   <center>
-      <SplitPane dividerPositions="0.7" orientation="VERTICAL">
-         <HBox minHeight="200.0" spacing="10.0">
-            <padding>
-               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-            <VBox alignment="CENTER" spacing="5.0" HBox.hgrow="ALWAYS">
-               <TableView fx:id="tableFiles" prefHeight="300.0" prefWidth="350.0" VBox.vgrow="ALWAYS">
-                 <columns>
-                   <TableColumn fx:id="colName" prefWidth="185.0" text="%file.name" />
-                   <TableColumn fx:id="colStatus" prefWidth="150.0" text="%file.status" />
-                 </columns>
-               </TableView>
+<BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ie.cit.r00158694.soft8023.lab1.controller.ViewClientController">
+    <center>
+        <SplitPane dividerPositions="0.7" orientation="VERTICAL">
+            <HBox minHeight="200.0" spacing="10.0">
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                </padding>
+                <VBox alignment="CENTER" spacing="5.0" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="tableFiles" prefHeight="300.0" prefWidth="350.0" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colName" prefWidth="185.0" text="%file.name"/>
+                            <TableColumn fx:id="colStatus" prefWidth="150.0" text="%file.status"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+                <VBox alignment="CENTER" minWidth="100.0" spacing="10.0">
+                    <VBox alignment="CENTER" spacing="5.0">
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </padding>
+                        <Button fx:id="btnPlayFile" mnemonicParsing="false" onAction="#playFile" text="%client.play"/>
+                        <Button fx:id="btnStopFile" mnemonicParsing="false" onAction="#stopFile" text="%client.stop"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="5.0">
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                        </padding>
+                        <Button fx:id="btnAddFile" mnemonicParsing="false" onAction="#addFile" text="%client.addFile"/>
+                        <Button fx:id="btnRemoveFile" mnemonicParsing="false" onAction="#removeFile"
+                                text="%client.removeFile"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+            <VBox alignment="CENTER" minHeight="80.0" spacing="5.0" SplitPane.resizableWithParent="false">
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                </padding>
+                <Label text="%client.log"/>
+                <TextArea fx:id="txtLog" editable="false" prefColumnCount="0" prefRowCount="5" VBox.vgrow="ALWAYS">
+                    <font>
+                        <Font name="Courier New" size="11.0"/>
+                    </font>
+                </TextArea>
             </VBox>
-            <VBox alignment="CENTER" minWidth="100.0" spacing="10.0">
-               <VBox alignment="CENTER" spacing="5.0">
-                  <padding>
-                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  </padding>
-                  <Button fx:id="btnPlayFile" mnemonicParsing="false" onAction="#playFile" text="%client.play" />
-                  <Button fx:id="btnStopFile" mnemonicParsing="false" onAction="#stopFile" text="%client.stop" />
-               </VBox>
-               <VBox alignment="CENTER" spacing="5.0">
-                  <padding>
-                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                  </padding>
-                  <Button fx:id="btnAddFile" mnemonicParsing="false" onAction="#addFile" text="%client.addFile" />
-                  <Button fx:id="btnRemoveFile" mnemonicParsing="false" onAction="#removeFile" text="%client.removeFile" />
-               </VBox>
-            </VBox>
-         </HBox>
-         <VBox alignment="CENTER" minHeight="80.0" spacing="5.0" SplitPane.resizableWithParent="false">
-            <padding>
-               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-            <Label text="%client.log" />
-            <TextArea fx:id="txtLog" editable="false" prefColumnCount="0" prefRowCount="5" VBox.vgrow="ALWAYS">
-               <font>
-                  <Font name="Courier New" size="11.0" />
-               </font></TextArea>
-         </VBox>
-      </SplitPane>
-   </center>
+        </SplitPane>
+    </center>
 </BorderPane>
