@@ -62,6 +62,7 @@ public class ServerController {
 			protected void updateItem(IClient item, boolean empty) {
 				super.updateItem(item, empty);
 				if (!empty) setText(item.getClientName());
+				else setText("");
 			}
 		});
 
@@ -132,8 +133,9 @@ public class ServerController {
 			stage.setTitle(String.format("%s: %s", resources.getString("server.viewClient"), client.toString()));
 			stage.setResizable(true);
 			stage.setScene(new Scene(root));
+			stage.setOnCloseRequest(event1 -> clientStageMap.remove(client));
 
-			clientStageMap.put(client, stage);
+			clientStageMap.putIfAbsent(client, stage);
 
 			stage.show();
 		} catch (IOException e) {

@@ -118,7 +118,7 @@ public class Monitor {
 	 * @return If the file is played successfully {@code true} otherwise {@code false}
 	 */
 	public boolean playFile(IClient client, String file) {
-		boolean play = files.contains(file);
+		boolean play = files.contains(file) && !file.equals(lockedFiles.get(client));
 		if (play) {
 			String previous = lockedFiles.get(client);
 			if (previous != null) stopPlayingFile(client, previous);

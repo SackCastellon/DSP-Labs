@@ -34,9 +34,10 @@ public class AddClientController implements ReturnValue<IClient> {
 	@FXML
 	void initialize() {
 		txtClientName.textProperty().addListener((observable, oldValue, newValue) -> {
-			boolean disable = txtClientName.getText().isEmpty() || monitor.getClients().stream().anyMatch(client -> client.getClientName().equals(txtClientName.getText()));
+			boolean disable = txtClientName.getText().trim().isEmpty() || monitor.getClients().stream().anyMatch(client -> client.getClientName().equals(txtClientName.getText()));
 			btnSave.setDisable(disable);
 		});
+		btnSave.setDisable(true);
 	}
 
 	@FXML

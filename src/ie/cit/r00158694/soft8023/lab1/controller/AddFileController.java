@@ -32,9 +32,10 @@ public class AddFileController implements ReturnValue<String> {
 	@FXML
 	void initialize() {
 		txtFileName.textProperty().addListener((observable, oldValue, newValue) -> {
-			boolean disable = txtFileName.getText().isEmpty() || monitor.getFiles().contains(txtFileName.getText());
+			boolean disable = txtFileName.getText().trim().isEmpty() || monitor.getFiles().contains(txtFileName.getText());
 			btnSave.setDisable(disable);
 		});
+		btnSave.setDisable(true);
 	}
 
 	@FXML
