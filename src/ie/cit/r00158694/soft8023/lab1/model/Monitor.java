@@ -7,24 +7,33 @@
 
 package ie.cit.r00158694.soft8023.lab1.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Monitor {
 
-	private final List<Client> clients = new ArrayList<>();
-	private final List<String> files = new ArrayList<>();
+	private final Set<Client> clients = new HashSet<>();
+	private final Set<String> files = new HashSet<>();
 	private final Map<Client, String> lockedFiles = new HashMap<>();
 
-	private final String folder;
+	private static Monitor instance = null;
 
-	public Monitor(String folder) { this.folder = folder; }
+	private Monitor(String folder) {
+		// TODO
+	}
+
+	public static Monitor getInstance() {
+		if (instance == null) instance = new Monitor("folder");
+		return instance;
+	}
 
 	public void addClient(Client client) { clients.add(client); }
 
 	public void removeClient(Client client) { clients.remove(client); }
+
+	public Set<Client> getClients() { return clients; }
 
 	public boolean addFile(Client client, String file) {
 		boolean add = files.add(file);
@@ -37,6 +46,10 @@ public class Monitor {
 		if (remove) notifyClients(new Event(client, Action.REMOVED, file));
 		return remove;
 	}
+
+	public Set<String> getFiles() { return files; }
+
+	public Map<Client, String> getLockedFiles() { return lockedFiles; }
 
 	public boolean playFile(Client client, String file) {
 		boolean play = files.contains(file);
@@ -56,10 +69,4 @@ public class Monitor {
 	}
 
 	private void notifyClients(Event event) { clients.forEach(client -> client.update(event)); }
-
-	public List<Client> getClients() { return clients; }
-
-	public List<String> getFiles() { return files; }
-
-	public Map<Client, String> getLockedFiles() { return lockedFiles; }
 }

@@ -8,6 +8,7 @@
 package ie.cit.r00158694.soft8023.lab1.controller;
 
 import ie.cit.r00158694.soft8023.lab1.model.Client;
+import ie.cit.r00158694.soft8023.lab1.model.Monitor;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,9 +28,14 @@ public class AddClientController implements ReturnValue<Client> {
 	private Button btnSave;
 
 	private Client client;
+	private Monitor monitor;
 
 	@FXML
-	void initialize() { btnSave.disableProperty().bind(txtClientName.textProperty().isEmpty()); }
+	void initialize() {
+		txtClientName.textProperty().addListener((observable, oldValue, newValue) -> {
+			boolean disable = txtClientName.getText().isEmpty() || monitor.getFiles().contains(txtClientName.getText());
+			btnSave.setDisable(disable);
+		}); }
 
 	@FXML
 	void saveData(ActionEvent event) {
@@ -46,4 +52,6 @@ public class AddClientController implements ReturnValue<Client> {
 
 	@Override
 	public Optional<Client> getReturnValue() { return Optional.ofNullable(client); }
+
+	public void setMonitor(Monitor monitor) { this.monitor = monitor; }
 }

@@ -9,6 +9,6 @@ package ie.cit.r00158694.soft8023.lab1.controller;
 
 import java.util.Optional;
 
-public interface ReturnValue<T> {
+interface ReturnValue<T> {
 	Optional<T> getReturnValue();
 }

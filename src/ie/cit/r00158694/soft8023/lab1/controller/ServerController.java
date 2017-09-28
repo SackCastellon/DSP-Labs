@@ -69,6 +69,9 @@ public class ServerController {
 
 			Parent root = loader.load();
 
+			AddClientController controller = loader.getController();
+			controller.setMonitor(monitor);
+
 			Stage stage = new Stage();
 			stage.initModality(Modality.WINDOW_MODAL);
 			stage.initOwner(((Parent) event.getSource()).getScene().getWindow());
@@ -77,7 +80,6 @@ public class ServerController {
 			stage.setScene(new Scene(root));
 			stage.showAndWait();
 
-			ReturnValue<Client> controller = loader.getController();
 			controller.getReturnValue().ifPresent(client -> {
 				monitor.addClient(client);
 				listClients.getItems().setAll(monitor.getClients());

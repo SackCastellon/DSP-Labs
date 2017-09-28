@@ -33,7 +33,7 @@ public class Main extends Application {
 			Parent root = loader.load();
 
 			ServerController controller = loader.getController();
-			controller.setMonitor(new Monitor("folder"));
+			controller.setMonitor(Monitor.getInstance());
 
 			primaryStage.setTitle(resources.getString("server.title"));
 			primaryStage.setScene(new Scene(root));

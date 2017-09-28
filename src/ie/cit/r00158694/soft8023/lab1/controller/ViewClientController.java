@@ -66,7 +66,11 @@ public class ViewClientController {
 	@FXML
 	void initialize() {
 		tableFiles.setPlaceholder(new Text(resources.getString("client.fileList.empty")));
-		colName.setCellValueFactory(param -> new SimpleStringProperty(param.getValue()));
+		colName.setCellValueFactory(param -> {
+			String string = param.getValue();
+			if (param.getValue().equals(monitor.getLockedFiles().get(client))) string += " ►";
+			return new SimpleStringProperty(string);
+		});
 		colStatus.setCellValueFactory(param -> {
 			SimpleStringProperty property = new SimpleStringProperty();
 			if (monitor.getLockedFiles().containsValue(param.getValue())) {
@@ -96,6 +100,9 @@ public class ViewClientController {
 
 			Parent root = loader.load();
 
+			AddFileController controller = loader.getController();
+			controller.setMonitor(monitor);
+
 			Stage stage = new Stage();
 			stage.initModality(Modality.WINDOW_MODAL);
 			stage.initOwner(((Parent) event.getSource()).getScene().getWindow());
@@ -104,7 +111,6 @@ public class ViewClientController {
 			stage.setScene(new Scene(root));
 			stage.showAndWait();
 
-			ReturnValue<String> controller = loader.getController();
 			controller.getReturnValue().ifPresent(file -> monitor.addFile(client, file));
 		} catch (IOException e) {
 			e.printStackTrace();
