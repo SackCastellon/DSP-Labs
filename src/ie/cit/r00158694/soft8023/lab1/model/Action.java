@@ -9,7 +9,7 @@ package ie.cit.r00158694.soft8023.lab1.model;
 
 public enum Action {
 
-	ADDED("action.added"), REMOVED("action.removed"), STARTED_PLAYING("action.startedPlaying"), STOPPED_PLAYING("action.stoppedPlaying");
+	ADD("action.added"), REMOVE("action.removed"), READ("action.startedPlaying"), RELEASE("action.stoppedPlaying");
 
 	private final String key;
 

@@ -7,18 +7,29 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.Monitor;
+import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.SharedFile;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class AddFileController implements ReturnValue<String> {
+public class AddFileController implements ReturnValue<SharedFile> {
+
+	@FXML
+	private ResourceBundle resources;
+
+	@FXML
+	private TextField txtFilePath;
 
 	@FXML
 	private TextField txtFileName;
@@ -26,21 +37,31 @@ public class AddFileController implements ReturnValue<String> {
 	@FXML
 	private Button btnSave;
 
-	private String fileName;
-	private Monitor monitor;
+	private SharedFile sharedFile;
+	private ResourceMonitor monitor;
 
 	@FXML
 	void initialize() {
-		txtFileName.textProperty().addListener((observable, oldValue, newValue) -> {
-			boolean disable = txtFileName.getText().trim().isEmpty() || monitor.getFiles().contains(txtFileName.getText());
-			btnSave.setDisable(disable);
-		});
+		txtFilePath.textProperty().addListener((observable, oldValue, newValue) -> btnSave
+				.setDisable(newValue.trim().isEmpty() || monitor.getFiles().stream().anyMatch(file -> file.getFile().getAbsolutePath().equals(newValue))));
+		txtFileName.textProperty()
+				.addListener((observable, oldValue, newValue) -> btnSave.setDisable(newValue.trim().isEmpty() || monitor.getFiles().stream().anyMatch(file -> file.getName().equals(newValue))));
+
 		btnSave.setDisable(true);
 	}
 
 	@FXML
+	void openFile(ActionEvent event) {
+		FileChooser chooser = new FileChooser();
+		chooser.setTitle(resources.getString("client.addFile"));
+		chooser.getExtensionFilters().setAll(new ExtensionFilter("MP3 audio file", "mp3"));
+		File file = chooser.showOpenDialog(((Parent) event.getSource()).getScene().getWindow());
+		if (file != null) txtFilePath.setText(file.getAbsolutePath());
+	}
+
+	@FXML
 	void saveData(ActionEvent event) {
-		fileName = txtFileName.getText();
+		//		sharedFile = txtFileName.getText(); TODO
 		closeDialog(event);
 	}
 
@@ -52,7 +73,7 @@ public class AddFileController implements ReturnValue<String> {
 	}
 
 	@Override
-	public Optional<String> getReturnValue() { return Optional.ofNullable(fileName); }
+	public Optional<SharedFile> getReturnValue() { return Optional.ofNullable(sharedFile); }
 
-	public void setMonitor(Monitor monitor) { this.monitor = monitor; }
+	public void setMonitor(ResourceMonitor monitor) { this.monitor = monitor; }
 }

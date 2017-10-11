@@ -7,17 +7,16 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.IClient;
-import ie.cit.r00158694.soft8023.lab1.model.Monitor;
+import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.SharedFile;
+import ie.cit.r00158694.soft8023.lab1.model.client.Client;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -25,10 +24,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
-import java.io.IOException;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
@@ -39,13 +38,13 @@ public class ViewClientController {
 	private ResourceBundle resources;
 
 	@FXML
-	private TableView<String> tableFiles;
+	private TableView<SharedFile> tableFiles;
 
 	@FXML
-	private TableColumn<String, String> colName;
+	private TableColumn<SharedFile, String> colName;
 
 	@FXML
-	private TableColumn<String, String> colStatus;
+	private TableColumn<SharedFile, String> colStatus;
 
 	@FXML
 	private Button btnPlayFile;
@@ -62,22 +61,22 @@ public class ViewClientController {
 	@FXML
 	private TextArea txtLog;
 
-	private Monitor monitor;
-	private IClient client;
+	private ResourceMonitor resourceMonitor;
+	private Client client;
 
 	@FXML
 	void initialize() {
 		tableFiles.setPlaceholder(new Text(resources.getString("client.fileList.empty")));
 		colName.setCellValueFactory(param -> {
-			String string = param.getValue();
-			if (param.getValue().equals(monitor.getLockedFiles().get(client))) string += " ►";
+			String string = param.getValue().getName();
+			if (string.equals(resourceMonitor.getLockedFiles().get(client))) string += " ►";
 			return new SimpleStringProperty(string);
 		});
 		colStatus.setCellValueFactory(param -> {
 			SimpleStringProperty property = new SimpleStringProperty();
-			if (monitor.getLockedFiles().containsValue(param.getValue())) {
+			if (resourceMonitor.getLockedFiles().containsValue(param.getValue().getName())) {
 				String clientsLockingFile =
-						monitor.getLockedFiles().entrySet().stream().filter(entry -> entry.getValue().equals(param.getValue())).map(Entry::getKey).map(IClient::getClientName).sorted()
+						resourceMonitor.getLockedFiles().entrySet().stream().filter(entry -> entry.getValue().equals(param.getValue().getName())).map(Entry::getKey).map(Client::getClientName).sorted()
 								.reduce((s, s2) -> s + ", " + s2).orElse("");
 				property.setValue(String.format(resources.getString("file.status.locked"), clientsLockingFile));
 			} else {
@@ -96,63 +95,45 @@ public class ViewClientController {
 
 	@FXML
 	void addFile(ActionEvent event) {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/view/AddFile.fxml"));
-			loader.setResources(resources);
-
-			Parent root = loader.load();
-
-			AddFileController controller = loader.getController();
-			controller.setMonitor(monitor);
-
-			Stage stage = new Stage();
-			stage.initModality(Modality.WINDOW_MODAL);
-			stage.initOwner(((Parent) event.getSource()).getScene().getWindow());
-			stage.setTitle(resources.getString("client.addFile"));
-			stage.setResizable(false);
-			stage.setScene(new Scene(root));
-			stage.showAndWait();
-
-			controller.getReturnValue().ifPresent(file -> {
-				if (!monitor.addFile(client, file)) showAlert("dialog.notAdded");
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(resources.getString("client.addFile"));
+		fileChooser.setSelectedExtensionFilter(new ExtensionFilter("MP3 audio file", "mp3"));
+		File file = fileChooser.showOpenDialog(((Parent) event.getSource()).getScene().getWindow());
+		if (!resourceMonitor.addFile(client, new SharedFile(file, file.getName()))) // FIXME
+			showAlert("dialog.notAdded");
 	}
 
 	@FXML
 	void removeFile(ActionEvent event) {
-		String file = tableFiles.getSelectionModel().getSelectedItem();
-		if (!monitor.removeFile(client, file)) showAlert("dialog.notRemoved");
+		String file = tableFiles.getSelectionModel().getSelectedItem().getName();
+		if (!resourceMonitor.deleteFile(client, file)) showAlert("dialog.notRemoved");
 	}
 
 	@FXML
 	void playFile(ActionEvent event) {
-		String file = tableFiles.getSelectionModel().getSelectedItem();
-		if (!monitor.playFile(client, file)) showAlert("dialog.notPlayed");
+		String file = tableFiles.getSelectionModel().getSelectedItem().getName();
+		if (!resourceMonitor.readFile(client, file)) showAlert("dialog.notPlayed");
 	}
 
 	@FXML
 	void stopFile(ActionEvent event) {
-		String file = tableFiles.getSelectionModel().getSelectedItem();
-		if (!monitor.stopPlayingFile(client, file)) showAlert("dialog.notStopped");
+		String file = tableFiles.getSelectionModel().getSelectedItem().getName();
+		if (!resourceMonitor.releaseFile(client, file)) showAlert("dialog.notStopped");
 	}
 
-	public void setMonitor(Monitor monitor) {
-		this.monitor = monitor;
-		tableFiles.getItems().setAll(monitor.getFiles());
+	public void setResourceMonitor(ResourceMonitor resourceMonitor) {
+		this.resourceMonitor = resourceMonitor;
+		tableFiles.getItems().setAll(resourceMonitor.getFiles());
 	}
 
-	public void setClient(IClient client) {
+	public void setClient(Client client) {
 		this.client = client;
-		txtLog.setText("     −=≡ This client has subscribed to the folder monitor ≡=−");
+		txtLog.setText("     −=≡ This client has subscribed to the Resource Monitor ≡=−");
 		client.setOnUpdate(event -> {
 			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-			txtLog.appendText('\n' + String.format(resources.getString(event.getAction().getKey()), format.format(event.getDate()), event.getClient().getClientName(), event.getFile()));
+			txtLog.appendText('\n' + String.format(resources.getString(event.getAction().getKey()), format.format(event.getDate()), event.getClient().getClientName(), event.getFileName()));
 
-			tableFiles.getItems().setAll(monitor.getFiles());
+			tableFiles.getItems().setAll(resourceMonitor.getFiles());
 		});
 	}
 

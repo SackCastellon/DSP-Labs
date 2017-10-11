@@ -7,6 +7,9 @@
 
 package ie.cit.r00158694.soft8023.lab1.model;
 
+import ie.cit.r00158694.soft8023.lab1.model.client.Client;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -15,16 +18,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Monitor {
+public class ResourceMonitor {
 
-	private final Set<IClient> clients = new HashSet<>();
-	private final Set<String> files = new HashSet<>();
-	private final Map<IClient, String> lockedFiles = new HashMap<>();
+	private final Set<Client> clients = new HashSet<>();
+	private final Set<SharedFile> files = new HashSet<>();
+	private final Map<Client, String> lockedFiles = new HashMap<>();
 
-	private static Monitor instance = null;
+	private static ResourceMonitor instance = null;
 
-	private Monitor() {
-		// TODO
+	private final int maxSimultaneousAccess;
+	private final File sharedFolder; // TODO
+
+	private ResourceMonitor(int maxSimultaneousAccess, File sharedFolder) {
+		this.maxSimultaneousAccess = maxSimultaneousAccess;
+		this.sharedFolder = sharedFolder;
 	}
 
 	/**
@@ -32,8 +39,8 @@ public class Monitor {
 	 *
 	 * @return The monitor instance
 	 */
-	public static Monitor getInstance() {
-		if (instance == null) instance = new Monitor();
+	public static ResourceMonitor getInstance() {
+		if (instance == null) instance = new ResourceMonitor(2, new File("SharedFolder"));
 		return instance;
 	}
 
@@ -42,23 +49,23 @@ public class Monitor {
 	 *
 	 * @param client The client to add
 	 */
-	public void addClient(IClient client) { clients.add(client); }
+	public boolean addClient(Client client) { return clients.add(client); }
 
 	/**
 	 * Un-subscribes the client from the monitor so it will no longer receive an UpdateEvent when something changes.
 	 *
 	 * @param client The client to remove
 	 */
-	public void removeClient(IClient client) { clients.remove(client); }
+	public boolean removeClient(Client client) { return clients.remove(client); }
 
 	/**
 	 * Returns a (sorted) list of the clients subscribed to the monitor to receive updates.
 	 *
 	 * @return The list of clients
 	 */
-	public List<IClient> getClients() {
-		ArrayList<IClient> list = new ArrayList<>(clients);
-		list.sort(Comparator.comparing(IClient::getClientName));
+	public List<Client> getClients() {
+		ArrayList<Client> list = new ArrayList<>(clients);
+		list.sort(Comparator.comparing(Client::getClientName));
 		return list;
 	}
 
@@ -70,9 +77,9 @@ public class Monitor {
 	 *
 	 * @return If the file is added successfully {@code true} otherwise {@code false}
 	 */
-	public boolean addFile(IClient client, String file) {
+	public boolean addFile(Client client, SharedFile file) {
 		boolean add = files.add(file);
-		if (add) notifyClients(new UpdateEvent(client, Action.ADDED, file));
+		if (add) notifyClients(new UpdateEvent(client, Action.ADD, file.getName()));
 		return add;
 	}
 
@@ -84,30 +91,11 @@ public class Monitor {
 	 *
 	 * @return If the file is removed successfully {@code true} otherwise {@code false}
 	 */
-	public boolean removeFile(IClient client, String file) {
-		boolean remove = !lockedFiles.containsValue(file) && files.remove(file);
-		if (remove) notifyClients(new UpdateEvent(client, Action.REMOVED, file));
+	public boolean deleteFile(Client client, String file) {
+		boolean remove = !lockedFiles.containsValue(file) && files.removeIf(f -> f.getName().equals(file));
+		if (remove) notifyClients(new UpdateEvent(client, Action.REMOVE, file));
 		return remove;
 	}
-
-	/**
-	 * Returns a (sorted) list of the files in the folder being monitored.
-	 *
-	 * @return The list of files
-	 */
-	public List<String> getFiles() {
-		ArrayList<String> list = new ArrayList<>(files);
-		list.sort(String::compareToIgnoreCase);
-		return list;
-	}
-
-	/**
-	 * Returns a map of the locked files in the folder being monitored.<br>
-	 * The key is a client and the value is the file that the client is locking.
-	 *
-	 * @return The map of locked files
-	 */
-	public Map<IClient, String> getLockedFiles() { return lockedFiles; }
 
 	/**
 	 * Plays a file from the folder being monitored and sends an update to all the subscribed clients.
@@ -117,13 +105,14 @@ public class Monitor {
 	 *
 	 * @return If the file is played successfully {@code true} otherwise {@code false}
 	 */
-	public boolean playFile(IClient client, String file) {
-		boolean play = files.contains(file) && !file.equals(lockedFiles.get(client));
+	public boolean readFile(Client client, String file) {
+		boolean play = files.stream().anyMatch(f -> f.getName().equals(file)) && !file.equals(lockedFiles.get(client)) && getLockedFiles().values().stream().mapToInt(s -> s.equals(file) ? 1 : 0)
+				.sum() < maxSimultaneousAccess;
 		if (play) {
 			String previous = lockedFiles.get(client);
-			if (previous != null) stopPlayingFile(client, previous);
+			if (previous != null) releaseFile(client, previous);
 			lockedFiles.put(client, file);
-			notifyClients(new UpdateEvent(client, Action.STARTED_PLAYING, file));
+			notifyClients(new UpdateEvent(client, Action.READ, file));
 		}
 		return play;
 	}
@@ -136,16 +125,38 @@ public class Monitor {
 	 *
 	 * @return If the file is stopped playing successfully {@code true} otherwise {@code false}
 	 */
-	public boolean stopPlayingFile(IClient client, String file) {
+	public boolean releaseFile(Client client, String file) {
 		boolean stop = lockedFiles.remove(client, file);
-		if (stop) notifyClients(new UpdateEvent(client, Action.STOPPED_PLAYING, file));
+		if (stop) notifyClients(new UpdateEvent(client, Action.RELEASE, file));
 		return stop;
 	}
+
+	/**
+	 * Returns a (sorted) list of the files in the folder being monitored.
+	 *
+	 * @return The list of files
+	 */
+	public List<SharedFile> getFiles() {
+		ArrayList<SharedFile> list = new ArrayList<>(files);
+		list.sort(SharedFile::compareTo);
+		return list;
+	}
+
+	/**
+	 * Returns a map of the locked files in the folder being monitored.<br>
+	 * The key is a client and the value is the file that the client is locking.
+	 *
+	 * @return The map of locked files
+	 */
+	public Map<Client, String> getLockedFiles() { return lockedFiles; }
 
 	/**
 	 * Sends the given {@link UpdateEvent} to all the subscribed clients
 	 *
 	 * @param event The update event
 	 */
-	private void notifyClients(UpdateEvent event) { clients.forEach(client -> client.update(event)); }
+	private void notifyClients(UpdateEvent event) {
+		System.out.println();
+		clients.forEach(client -> client.update(event));
+	}
 }

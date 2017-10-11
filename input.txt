@@ -1,0 +1,11 @@
+4 Alex John Tim Petter
+Alex wait 3 seconds
+John share c:/despacito.mp3 despacito
+Alex share c:/we-are-the-champions.mp3 we-are-the-champions
+Tim share c:/eye-of-the-tiger.mp3 tiger
+Alex share c:/i-will-be-there-for-you.mp3 friends
+Alex requestS friends
+Tim requestS friends
+Petter requestS friends
+Alex release friends
+Alex delete friends

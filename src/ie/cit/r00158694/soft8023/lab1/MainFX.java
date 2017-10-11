@@ -8,7 +8,7 @@
 package ie.cit.r00158694.soft8023.lab1;
 
 import ie.cit.r00158694.soft8023.lab1.controller.ServerController;
-import ie.cit.r00158694.soft8023.lab1.model.Monitor;
+import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +33,7 @@ public class MainFX extends Application {
 			Parent root = loader.load();
 
 			ServerController controller = loader.getController();
-			controller.setMonitor(Monitor.getInstance());
+			controller.setMonitor(ResourceMonitor.getInstance());
 
 			primaryStage.setTitle(resources.getString("server.title"));
 			primaryStage.setScene(new Scene(root));

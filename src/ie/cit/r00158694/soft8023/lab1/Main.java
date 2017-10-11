@@ -7,39 +7,61 @@
 
 package ie.cit.r00158694.soft8023.lab1;
 
-import ie.cit.r00158694.soft8023.lab1.model.BasicClient;
-import ie.cit.r00158694.soft8023.lab1.model.Monitor;
+import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.client.Client;
+import ie.cit.r00158694.soft8023.lab1.model.client.FullClient;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-	public static void main(String[] args) {
+	private static final Map<String, Client> CLIENTS = new HashMap<>();
+	private static final ResourceMonitor RESOURCE_MONITOR = ResourceMonitor.getInstance();
 
-		Monitor monitor = Monitor.getInstance();
+	public static void main(String[] args) throws Exception {
 
-		BasicClient client1 = new BasicClient("Pepe", monitor);
-		BasicClient client2 = new BasicClient("Jose", monitor);
-		BasicClient client3 = new BasicClient("Luis", monitor);
+		File inputFile = new File("input.txt");
+		Scanner scanner = new Scanner(inputFile);
 
-		monitor.addFile(client1, "Hello");
-		System.out.println();
-		monitor.playFile(client2, "Hello");
-		System.out.println();
-		monitor.addFile(client2, "Animals");
-		System.out.println();
-		monitor.playFile(client1, "Hello");
-		System.out.println();
-		monitor.stopPlayingFile(client2, "Hello");
-		System.out.println();
-		monitor.addFile(client3, "Apollo");
-		System.out.println();
-		monitor.addFile(client2, "Burn");
-		System.out.println();
-		monitor.removeFile(client1, "Hello");
-		System.out.println();
-		monitor.playFile(client3, "Burn");
-		System.out.println();
-		monitor.removeFile(client1, "Apollo");
-		System.out.println();
-		monitor.stopPlayingFile(client3, "Burn");
+		int nClients = scanner.nextInt();
+		for (int i = 0; i < nClients; i++) {
+			String name = scanner.next();
+			FullClient client = new FullClient(name, RESOURCE_MONITOR);
+			CLIENTS.put(name, client);
+		}
+
+		scanner.nextLine(); // Workaround
+
+		while (scanner.hasNextLine() && scanner.hasNext()) {
+			Client client = CLIENTS.get(scanner.next());
+			switch (scanner.next()) {
+				case "wait":
+					int timeout = scanner.nextInt();
+					TimeUnit timeUnit = TimeUnit.valueOf(scanner.next().toUpperCase());
+					client.sleep(timeUnit, timeout);
+					break;
+				case "share":
+					client.addFile(scanner.next(), scanner.next());
+					break;
+				case "requestS":
+					client.readFileAndSleep(scanner.next());
+					break;
+				case "requestD":
+					client.readFileAndDiscard(scanner.next());
+					break;
+				case "release":
+					client.releaseFile(scanner.next());
+					break;
+				case "delete":
+					client.deleteFile(scanner.next());
+					break;
+			}
+
+			scanner.nextLine(); // Workaround
+		}
 	}
 }

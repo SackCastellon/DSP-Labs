@@ -7,9 +7,9 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.BasicClient;
-import ie.cit.r00158694.soft8023.lab1.model.IClient;
-import ie.cit.r00158694.soft8023.lab1.model.Monitor;
+import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.client.Client;
+import ie.cit.r00158694.soft8023.lab1.model.client.FullClient;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 
 import java.util.Optional;
 
-public class AddClientController implements ReturnValue<IClient> {
+public class AddClientController implements ReturnValue<Client> {
 
 	@FXML
 	private TextField txtClientName;
@@ -28,13 +28,13 @@ public class AddClientController implements ReturnValue<IClient> {
 	@FXML
 	private Button btnSave;
 
-	private IClient client;
-	private Monitor monitor;
+	private Client client;
+	private ResourceMonitor ResourceMonitor;
 
 	@FXML
 	void initialize() {
 		txtClientName.textProperty().addListener((observable, oldValue, newValue) -> {
-			boolean disable = txtClientName.getText().trim().isEmpty() || monitor.getClients().stream().anyMatch(client -> client.getClientName().equals(txtClientName.getText()));
+			boolean disable = txtClientName.getText().trim().isEmpty() || ResourceMonitor.getClients().stream().anyMatch(client -> client.getClientName().equals(txtClientName.getText()));
 			btnSave.setDisable(disable);
 		});
 		btnSave.setDisable(true);
@@ -42,7 +42,7 @@ public class AddClientController implements ReturnValue<IClient> {
 
 	@FXML
 	void saveData(ActionEvent event) {
-		client = new BasicClient(txtClientName.getText(), monitor);
+		client = new FullClient(txtClientName.getText(), ResourceMonitor);
 		closeDialog(event);
 	}
 
@@ -54,7 +54,7 @@ public class AddClientController implements ReturnValue<IClient> {
 	}
 
 	@Override
-	public Optional<IClient> getReturnValue() { return Optional.ofNullable(client); }
+	public Optional<Client> getReturnValue() { return Optional.ofNullable(client); }
 
-	public void setMonitor(Monitor monitor) { this.monitor = monitor; }
+	public void setResourceMonitor(ResourceMonitor ResourceMonitor) { this.ResourceMonitor = ResourceMonitor; }
 }

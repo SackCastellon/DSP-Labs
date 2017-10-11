@@ -7,8 +7,8 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.IClient;
-import ie.cit.r00158694.soft8023.lab1.model.Monitor;
+import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.client.Client;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -35,7 +35,7 @@ public class ServerController {
 	private ResourceBundle resources;
 
 	@FXML
-	private ListView<IClient> listClients;
+	private ListView<Client> listClients;
 
 	@FXML
 	private Button btnAddClient;
@@ -46,9 +46,9 @@ public class ServerController {
 	@FXML
 	private Button btnViewClient;
 
-	private Monitor monitor;
+	private ResourceMonitor monitor;
 
-	private final Map<IClient, Stage> clientStageMap = new HashMap<>();
+	private final Map<Client, Stage> clientStageMap = new HashMap<>();
 
 	@FXML
 	void initialize() {
@@ -57,14 +57,7 @@ public class ServerController {
 		btnViewClient.disableProperty().bind(isNull);
 
 		listClients.setPlaceholder(new Text(resources.getString("server.clientList.empty")));
-		listClients.setCellFactory(param -> new ListCell<IClient>() {
-			@Override
-			protected void updateItem(IClient item, boolean empty) {
-				super.updateItem(item, empty);
-				if (!empty) setText(item.getClientName());
-				else setText("");
-			}
-		});
+		listClients.setCellFactory(param -> new ClientListCell());
 
 		Platform.runLater(() -> btnAddClient.requestFocus());
 	}
@@ -79,7 +72,7 @@ public class ServerController {
 			Parent root = loader.load();
 
 			AddClientController controller = loader.getController();
-			controller.setMonitor(monitor);
+			controller.setResourceMonitor(monitor);
 
 			Stage stage = new Stage();
 			stage.initModality(Modality.WINDOW_MODAL);
@@ -100,7 +93,7 @@ public class ServerController {
 
 	@FXML
 	void removeClient(ActionEvent event) {
-		IClient client = listClients.getSelectionModel().getSelectedItem();
+		Client client = listClients.getSelectionModel().getSelectedItem();
 
 		if (clientStageMap.containsKey(client)) clientStageMap.remove(client).close();
 
@@ -110,7 +103,7 @@ public class ServerController {
 
 	@FXML
 	void viewClient(ActionEvent event) {
-		IClient client = listClients.getSelectionModel().getSelectedItem();
+		Client client = listClients.getSelectionModel().getSelectedItem();
 
 		if (clientStageMap.containsKey(client)) {
 			clientStageMap.get(client).requestFocus();
@@ -125,7 +118,7 @@ public class ServerController {
 			Parent root = loader.load();
 
 			ViewClientController controller = loader.getController();
-			controller.setMonitor(monitor);
+			controller.setResourceMonitor(monitor);
 			controller.setClient(client);
 
 			Stage stage = new Stage();
@@ -143,8 +136,17 @@ public class ServerController {
 		}
 	}
 
-	public void setMonitor(Monitor monitor) {
-		this.monitor = monitor;
-		listClients.getItems().setAll(monitor.getClients());
+	public void setMonitor(ResourceMonitor resourceMonitor) {
+		this.monitor = resourceMonitor;
+		listClients.getItems().setAll(resourceMonitor.getClients());
+	}
+
+	private static class ClientListCell extends ListCell<Client> {
+		@Override
+		protected void updateItem(Client item, boolean empty) {
+			super.updateItem(item, empty);
+			if (!empty) setText(item.getClientName());
+			else setText("");
+		}
 	}
 }

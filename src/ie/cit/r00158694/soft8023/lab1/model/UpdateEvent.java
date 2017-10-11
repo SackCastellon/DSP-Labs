@@ -7,19 +7,21 @@
 
 package ie.cit.r00158694.soft8023.lab1.model;
 
+import ie.cit.r00158694.soft8023.lab1.model.client.Client;
+
 import java.util.Date;
 
 public class UpdateEvent {
 
-	private final IClient client;
+	private final Client client;
 	private final Action action;
-	private final String file;
+	private final String fileName;
 	private final Date time;
 
-	public UpdateEvent(IClient client, Action action, String file) {
+	public UpdateEvent(Client client, Action action, String fileName) {
 		this.client = client;
 		this.action = action;
-		this.file = file;
+		this.fileName = fileName;
 		this.time = new Date();
 	}
 
@@ -28,7 +30,7 @@ public class UpdateEvent {
 	 *
 	 * @return The client
 	 */
-	public IClient getClient() { return client; }
+	public Client getClient() { return client; }
 
 	/**
 	 * Returns the action that the client executed to cause the update.
@@ -38,11 +40,11 @@ public class UpdateEvent {
 	public Action getAction() { return action; }
 
 	/**
-	 * Returns the file over which the client executed the action to caused the update
+	 * Returns the fileName over which the client executed the action to caused the update
 	 *
-	 * @return The file
+	 * @return The fileName
 	 */
-	public String getFile() { return file; }
+	public String getFileName() { return fileName; }
 
 	/**
 	 * Returns the date at which the client executed the action that caused the update
