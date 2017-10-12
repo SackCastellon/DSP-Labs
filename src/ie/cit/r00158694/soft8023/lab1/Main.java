@@ -7,9 +7,9 @@
 
 package ie.cit.r00158694.soft8023.lab1;
 
-import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
 import ie.cit.r00158694.soft8023.lab1.model.client.Client;
 import ie.cit.r00158694.soft8023.lab1.model.client.FullClient;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
 
 import java.io.File;
 import java.util.HashMap;

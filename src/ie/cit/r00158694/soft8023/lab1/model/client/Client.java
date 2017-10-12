@@ -7,10 +7,10 @@
 
 package ie.cit.r00158694.soft8023.lab1.model.client;
 
-import ie.cit.r00158694.soft8023.lab1.model.Action;
-import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
-import ie.cit.r00158694.soft8023.lab1.model.SharedFile;
-import ie.cit.r00158694.soft8023.lab1.model.UpdateEvent;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.SharedFile;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.UpdateEvent;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.UpdateEvent.Action;
 
 import java.io.File;
 import java.util.Objects;

@@ -39,8 +39,9 @@
                         <padding>
                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                         </padding>
-                        <Button fx:id="btnPlayFile" mnemonicParsing="false" onAction="#playFile" text="%client.play"/>
-                        <Button fx:id="btnStopFile" mnemonicParsing="false" onAction="#stopFile" text="%client.stop"/>
+                        <Button fx:id="btnPlayFile" mnemonicParsing="false" onAction="#readFile" text="%client.play"/>
+                        <Button fx:id="btnStopFile" mnemonicParsing="false" onAction="#releaseFile"
+                                text="%client.stop"/>
                     </VBox>
                     <VBox alignment="CENTER" spacing="5.0">
                         <padding>

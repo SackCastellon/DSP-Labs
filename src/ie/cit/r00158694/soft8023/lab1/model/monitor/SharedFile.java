@@ -1,4 +1,4 @@
-package ie.cit.r00158694.soft8023.lab1.model;
+package ie.cit.r00158694.soft8023.lab1.model.monitor;
 
 import java.io.File;
 import java.util.Objects;

@@ -8,7 +8,7 @@
 package ie.cit.r00158694.soft8023.lab1;
 
 import ie.cit.r00158694.soft8023.lab1.controller.ServerController;
-import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 
 public class MainFX extends Application {
 
-	private static final ResourceBundle resources = ResourceBundle.getBundle("ie.cit.r00158694.soft8023.lab1.i18n");
+	private static final ResourceBundle resources = ResourceBundle.getBundle("ie.cit.r00158694.soft8023.lab1.assets.i18n.lang");
 
 	@Override
 	public void start(Stage primaryStage) {

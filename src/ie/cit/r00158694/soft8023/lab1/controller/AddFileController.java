@@ -7,9 +7,10 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
-import ie.cit.r00158694.soft8023.lab1.model.SharedFile;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.SharedFile;
 
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -42,26 +43,26 @@ public class AddFileController implements ReturnValue<SharedFile> {
 
 	@FXML
 	void initialize() {
-		txtFilePath.textProperty().addListener((observable, oldValue, newValue) -> btnSave
-				.setDisable(newValue.trim().isEmpty() || monitor.getFiles().stream().anyMatch(file -> file.getFile().getAbsolutePath().equals(newValue))));
-		txtFileName.textProperty()
-				.addListener((observable, oldValue, newValue) -> btnSave.setDisable(newValue.trim().isEmpty() || monitor.getFiles().stream().anyMatch(file -> file.getName().equals(newValue))));
-
-		btnSave.setDisable(true);
+		btnSave.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+			String path = txtFilePath.textProperty().getValueSafe();
+			String name = txtFileName.textProperty().getValueSafe();
+			return path.trim().isEmpty() || name.trim().isEmpty() || !new File(path).isFile() || monitor.getFiles().stream()
+					.anyMatch(file -> file.getFile().getAbsolutePath().equals(path) || file.getName().equals(name));
+		}, txtFilePath.textProperty(), txtFileName.textProperty()));
 	}
 
 	@FXML
-	void openFile(ActionEvent event) {
+	void chooseFile(ActionEvent event) {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle(resources.getString("client.addFile"));
-		chooser.getExtensionFilters().setAll(new ExtensionFilter("MP3 audio file", "mp3"));
+		chooser.getExtensionFilters().setAll(new ExtensionFilter(resources.getString("file.mp3.description"), "*.mp3"));
 		File file = chooser.showOpenDialog(((Parent) event.getSource()).getScene().getWindow());
 		if (file != null) txtFilePath.setText(file.getAbsolutePath());
 	}
 
 	@FXML
 	void saveData(ActionEvent event) {
-		//		sharedFile = txtFileName.getText(); TODO
+		sharedFile = new SharedFile(new File(txtFilePath.getText()), txtFileName.getText());
 		closeDialog(event);
 	}
 

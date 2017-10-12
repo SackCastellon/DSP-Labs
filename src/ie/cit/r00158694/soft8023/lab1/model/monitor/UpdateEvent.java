@@ -5,7 +5,7 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.model;
+package ie.cit.r00158694.soft8023.lab1.model.monitor;
 
 import ie.cit.r00158694.soft8023.lab1.model.client.Client;
 
@@ -52,4 +52,20 @@ public class UpdateEvent {
 	 * @return The date
 	 */
 	public Date getDate() { return time; }
+
+	public enum Action {
+
+		ADD("action.add"), REMOVE("action.remove"), READ("action.read"), RELEASE("action.release");
+
+		private final String key;
+
+		Action(String key) { this.key = key; }
+
+		/**
+		 * Returns the localization key used to translate this action text.
+		 *
+		 * @return The localization key
+		 */
+		public String getKey() { return key; }
+	}
 }

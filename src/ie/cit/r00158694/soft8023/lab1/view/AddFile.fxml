@@ -29,7 +29,7 @@
                 <Label text="%file.path"/>
                 <HBox spacing="5.0">
                     <TextField fx:id="txtFilePath" prefColumnCount="25"/>
-                    <Button mnemonicParsing="false" onAction="#openFile" text="..."/>
+                    <Button mnemonicParsing="false" onAction="#chooseFile" text="..."/>
                 </HBox>
             </VBox>
             <VBox spacing="5.0">

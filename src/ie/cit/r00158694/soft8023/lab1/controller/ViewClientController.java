@@ -7,16 +7,18 @@
 
 package ie.cit.r00158694.soft8023.lab1.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.ResourceMonitor;
-import ie.cit.r00158694.soft8023.lab1.model.SharedFile;
 import ie.cit.r00158694.soft8023.lab1.model.client.Client;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.model.monitor.SharedFile;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -24,10 +26,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
-import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
@@ -95,30 +97,48 @@ public class ViewClientController {
 
 	@FXML
 	void addFile(ActionEvent event) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle(resources.getString("client.addFile"));
-		fileChooser.setSelectedExtensionFilter(new ExtensionFilter("MP3 audio file", "mp3"));
-		File file = fileChooser.showOpenDialog(((Parent) event.getSource()).getScene().getWindow());
-		if (!resourceMonitor.addFile(client, new SharedFile(file, file.getName()))) // FIXME
-			showAlert("dialog.notAdded");
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/view/AddFile.fxml"));
+			loader.setResources(resources);
+
+			Parent root = loader.load();
+
+			AddFileController controller = loader.getController();
+			controller.setMonitor(resourceMonitor);
+
+			Stage stage = new Stage();
+			stage.initModality(Modality.WINDOW_MODAL);
+			stage.initOwner(((Parent) event.getSource()).getScene().getWindow());
+			stage.setTitle(resources.getString("client.addFile"));
+			stage.setResizable(false);
+			stage.setScene(new Scene(root));
+			stage.showAndWait();
+
+			controller.getReturnValue().ifPresent(file -> {
+				if (!resourceMonitor.addFile(client, file)) showAlert("dialog.add.error");
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	void removeFile(ActionEvent event) {
 		String file = tableFiles.getSelectionModel().getSelectedItem().getName();
-		if (!resourceMonitor.deleteFile(client, file)) showAlert("dialog.notRemoved");
+		if (!resourceMonitor.deleteFile(client, file)) showAlert("dialog.remove.error");
 	}
 
 	@FXML
-	void playFile(ActionEvent event) {
+	void readFile(ActionEvent event) {
 		String file = tableFiles.getSelectionModel().getSelectedItem().getName();
-		if (!resourceMonitor.readFile(client, file)) showAlert("dialog.notPlayed");
+		if (!resourceMonitor.readFile(client, file)) showAlert("dialog.read.error");
 	}
 
 	@FXML
-	void stopFile(ActionEvent event) {
+	void releaseFile(ActionEvent event) {
 		String file = tableFiles.getSelectionModel().getSelectedItem().getName();
-		if (!resourceMonitor.releaseFile(client, file)) showAlert("dialog.notStopped");
+		if (!resourceMonitor.releaseFile(client, file)) showAlert("dialog.release.error");
 	}
 
 	public void setResourceMonitor(ResourceMonitor resourceMonitor) {
