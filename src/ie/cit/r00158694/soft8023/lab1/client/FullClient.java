@@ -5,10 +5,10 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.model.client;
+package ie.cit.r00158694.soft8023.lab1.client;
 
-import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.SharedFile;
+import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.monitor.SharedFile;
 
 public class FullClient extends Client {
 
@@ -18,7 +18,7 @@ public class FullClient extends Client {
 	public boolean addFile(SharedFile file) { return getResourceMonitor().addFile(this, file); }
 
 	@Override
-	public boolean deleteFile(String file) { return getResourceMonitor().deleteFile(this, file); }
+	protected boolean deleteFile(String file) { return getResourceMonitor().deleteFile(this, file); }
 
 	@Override
 	protected boolean readFile(String file) { return getResourceMonitor().readFile(this, file); }

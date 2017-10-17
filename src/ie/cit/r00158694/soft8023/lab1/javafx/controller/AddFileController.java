@@ -5,10 +5,10 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.controller;
+package ie.cit.r00158694.soft8023.lab1.javafx.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.SharedFile;
+import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.monitor.SharedFile;
 
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;

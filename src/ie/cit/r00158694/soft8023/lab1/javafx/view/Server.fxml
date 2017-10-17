@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ie.cit.r00158694.soft8023.lab1.controller.ServerController">
+            fx:controller="ie.cit.r00158694.soft8023.lab1.javafx.controller.ServerController">
     <center>
         <VBox>
             <HBox spacing="10.0" VBox.vgrow="ALWAYS">

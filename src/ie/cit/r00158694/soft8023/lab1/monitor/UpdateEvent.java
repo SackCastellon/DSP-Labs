@@ -5,9 +5,9 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.model.monitor;
+package ie.cit.r00158694.soft8023.lab1.monitor;
 
-import ie.cit.r00158694.soft8023.lab1.model.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.Client;
 
 import java.util.Date;
 
@@ -55,7 +55,7 @@ public class UpdateEvent {
 
 	public enum Action {
 
-		ADD("action.add"), REMOVE("action.remove"), READ("action.read"), RELEASE("action.release");
+		ADD("action.add"), DELETE("action.remove"), READ("action.read"), RELEASE("action.release");
 
 		private final String key;
 

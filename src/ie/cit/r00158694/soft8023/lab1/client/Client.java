@@ -5,14 +5,18 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.model.client;
+package ie.cit.r00158694.soft8023.lab1.client;
 
-import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.SharedFile;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.UpdateEvent;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.UpdateEvent.Action;
+import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.monitor.SharedFile;
+import ie.cit.r00158694.soft8023.lab1.monitor.UpdateEvent;
+import ie.cit.r00158694.soft8023.lab1.monitor.UpdateEvent.Action;
+
+import javafx.util.Pair;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -24,7 +28,7 @@ public abstract class Client {
 
 	private Consumer<UpdateEvent> consumer;
 
-	private String waitForFile = null;
+	private final List<Pair<Action, String>> waitForFiles = new ArrayList<>();
 
 	public Client(String name, ResourceMonitor resourceMonitor) {
 		this.clientName = name;
@@ -48,13 +52,19 @@ public abstract class Client {
 
 	public boolean addFile(SharedFile file) { throw new UnsupportedOperationException("This client cannot add files"); }
 
-	public boolean deleteFile(String file) { throw new UnsupportedOperationException("This client cannot delete files"); }
+	protected boolean deleteFile(String file) { throw new UnsupportedOperationException("This client cannot delete files"); }
+
+	public boolean deleteFileAndSleep(String file) {
+		boolean b = deleteFile(file);
+		if (!b) waitForFiles.add(new Pair<>(Action.DELETE, file));
+		return b;
+	}
 
 	protected boolean readFile(String file) { throw new UnsupportedOperationException("This client cannot read files"); }
 
 	public final boolean readFileAndSleep(String file) {
 		boolean b = readFile(file);
-		if (!b) waitForFile = file;
+		if (!b) waitForFiles.add(new Pair<>(Action.READ, file));
 		return b;
 	}
 
@@ -63,15 +73,24 @@ public abstract class Client {
 	public final boolean releaseFile(String file) { return getResourceMonitor().releaseFile(this, file); }
 
 	public void update(UpdateEvent event) {
-		if (event.getClient() == this) {
-			System.out.printf("[%s] %s -> %s -> %s\n", clientName, event.getClient().getClientName(), event.getAction(), event.getFileName());
-		}
+		System.out.printf("[%s] %s -> %s -> %s\n", clientName, event.getClient().getClientName(), event.getAction(), event.getFileName());
 
 		if (consumer != null) consumer.accept(event);
 
-		if (waitForFile != null && event.getFileName().equals(waitForFile) && event.getAction() == Action.RELEASE) {
-			getResourceMonitor().readFile(this, waitForFile);
-			waitForFile = null;
+		if (event.getAction() == Action.RELEASE || event.getAction() == Action.ADD) {
+			waitForFiles.stream().filter(pair -> event.getFileName().equals(pair.getValue())).findFirst().ifPresent(actionStringPair -> {
+				boolean b = false;
+				switch (actionStringPair.getKey()) {
+					case READ:
+						b = getResourceMonitor().readFile(this, actionStringPair.getValue());
+						break;
+					case DELETE:
+						b = getResourceMonitor().deleteFile(this, actionStringPair.getValue());
+						break;
+				}
+
+				if (b) waitForFiles.remove(actionStringPair);
+			});
 		}
 	}
 

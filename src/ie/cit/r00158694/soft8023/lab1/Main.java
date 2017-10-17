@@ -7,12 +7,14 @@
 
 package ie.cit.r00158694.soft8023.lab1;
 
-import ie.cit.r00158694.soft8023.lab1.model.client.Client;
-import ie.cit.r00158694.soft8023.lab1.model.client.FullClient;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.FullClient;
+import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
 	private static final Map<String, Client> CLIENTS = new HashMap<>();
+	private static final Map<Client, List<Runnable>> CLIENT_TASKS = new HashMap<>();
 	private static final ResourceMonitor RESOURCE_MONITOR = ResourceMonitor.getInstance();
 
 	public static void main(String[] args) throws Exception {
@@ -32,36 +35,57 @@ public class Main {
 			String name = scanner.next();
 			FullClient client = new FullClient(name, RESOURCE_MONITOR);
 			CLIENTS.put(name, client);
+			CLIENT_TASKS.put(client, new LinkedList<>());
 		}
 
 		scanner.nextLine(); // Workaround
 
+		// First we read the file and save every action for every client
 		while (scanner.hasNextLine() && scanner.hasNext()) {
 			Client client = CLIENTS.get(scanner.next());
+			List<Runnable> tasks = CLIENT_TASKS.get(client);
+
 			switch (scanner.next()) {
-				case "wait":
+				case "wait": {
 					int timeout = scanner.nextInt();
 					TimeUnit timeUnit = TimeUnit.valueOf(scanner.next().toUpperCase());
-					client.sleep(timeUnit, timeout);
+					tasks.add(() -> client.sleep(timeUnit, timeout));
 					break;
-				case "share":
-					client.addFile(scanner.next(), scanner.next());
+				}
+				case "share": {
+					String filePath = scanner.next();
+					String fileName = scanner.next();
+					tasks.add(() -> client.addFile(filePath, fileName));
 					break;
-				case "requestS":
-					client.readFileAndSleep(scanner.next());
+				}
+				case "requestS": {
+					String fileName = scanner.next();
+					tasks.add(() -> client.readFileAndSleep(fileName));
 					break;
-				case "requestD":
-					client.readFileAndDiscard(scanner.next());
+				}
+				case "requestD": {
+					String fileName = scanner.next();
+					tasks.add(() -> client.readFileAndDiscard(fileName));
 					break;
-				case "release":
-					client.releaseFile(scanner.next());
+				}
+				case "release": {
+					String fileName = scanner.next();
+					tasks.add(() -> client.releaseFile(fileName));
 					break;
-				case "delete":
-					client.deleteFile(scanner.next());
+				}
+				case "delete": {
+					String fileName = scanner.next();
+					tasks.add(() -> client.deleteFileAndSleep(fileName));
 					break;
+				}
 			}
 
 			scanner.nextLine(); // Workaround
 		}
+
+		CLIENT_TASKS.forEach((client, runnables) -> {
+			Thread thread = new Thread(() -> runnables.forEach(Runnable::run), client.toString());
+			thread.start();
+		});
 	}
 }

@@ -5,9 +5,9 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.model.monitor;
+package ie.cit.r00158694.soft8023.lab1.monitor;
 
-import ie.cit.r00158694.soft8023.lab1.model.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.Client;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ public class ResourceMonitor {
 	 *
 	 * @return If the file is added successfully {@code true} otherwise {@code false}
 	 */
-	public boolean addFile(Client client, SharedFile file) {
+	public synchronized boolean addFile(Client client, SharedFile file) {
 		boolean add = files.add(file);
 		if (add) notifyClients(new UpdateEvent(client, UpdateEvent.Action.ADD, file.getName()));
 		return add;
@@ -91,10 +91,12 @@ public class ResourceMonitor {
 	 *
 	 * @return If the file is removed successfully {@code true} otherwise {@code false}
 	 */
-	public boolean deleteFile(Client client, String file) {
-		boolean remove = !lockedFiles.containsValue(file) && files.removeIf(f -> f.getName().equals(file));
-		if (remove) notifyClients(new UpdateEvent(client, UpdateEvent.Action.REMOVE, file));
-		return remove;
+	public synchronized boolean deleteFile(Client client, String file) {
+		boolean delete = !lockedFiles.containsValue(file) &&
+				files.removeIf(
+						f -> f.getName().equals(file));
+		if (delete) notifyClients(new UpdateEvent(client, UpdateEvent.Action.DELETE, file));
+		return delete;
 	}
 
 	/**
@@ -105,16 +107,16 @@ public class ResourceMonitor {
 	 *
 	 * @return If the file is played successfully {@code true} otherwise {@code false}
 	 */
-	public boolean readFile(Client client, String file) {
-		boolean play = files.stream().anyMatch(f -> f.getName().equals(file)) && !file.equals(lockedFiles.get(client)) && getLockedFiles().values().stream().mapToInt(s -> s.equals(file) ? 1 : 0)
-				.sum() < maxSimultaneousAccess;
-		if (play) {
+	public synchronized boolean readFile(Client client, String file) {
+		boolean read = files.stream().anyMatch(f -> f.getName().equals(file)) && !file.equals(lockedFiles.get(client)) && getLockedFiles().values().stream().filter(file::equals)
+				.count() < maxSimultaneousAccess;
+		if (read) {
 			String previous = lockedFiles.get(client);
 			if (previous != null) releaseFile(client, previous);
 			lockedFiles.put(client, file);
 			notifyClients(new UpdateEvent(client, UpdateEvent.Action.READ, file));
 		}
-		return play;
+		return read;
 	}
 
 	/**
@@ -125,10 +127,10 @@ public class ResourceMonitor {
 	 *
 	 * @return If the file is stopped playing successfully {@code true} otherwise {@code false}
 	 */
-	public boolean releaseFile(Client client, String file) {
-		boolean stop = lockedFiles.remove(client, file);
-		if (stop) notifyClients(new UpdateEvent(client, UpdateEvent.Action.RELEASE, file));
-		return stop;
+	public synchronized boolean releaseFile(Client client, String file) {
+		boolean release = lockedFiles.remove(client, file);
+		if (release) notifyClients(new UpdateEvent(client, UpdateEvent.Action.RELEASE, file));
+		return release;
 	}
 
 	/**
@@ -155,8 +157,5 @@ public class ResourceMonitor {
 	 *
 	 * @param event The update event
 	 */
-	private void notifyClients(UpdateEvent event) {
-		System.out.println();
-		clients.forEach(client -> client.update(event));
-	}
+	private void notifyClients(UpdateEvent event) { clients.forEach(client -> client.update(event)); }
 }

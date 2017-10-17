@@ -5,10 +5,10 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.controller;
+package ie.cit.r00158694.soft8023.lab1.javafx.controller;
 
-import ie.cit.r00158694.soft8023.lab1.model.client.Client;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.client.Client;
+import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -66,7 +66,7 @@ public class ServerController {
 	void addClient(ActionEvent event) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/view/AddClient.fxml"));
+			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/javafx/view/AddClient.fxml"));
 			loader.setResources(resources);
 
 			Parent root = loader.load();
@@ -112,7 +112,7 @@ public class ServerController {
 
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/view/ViewClient.fxml"));
+			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/javafx/view/ViewClient.fxml"));
 			loader.setResources(resources);
 
 			Parent root = loader.load();

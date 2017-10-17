@@ -5,10 +5,10 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1;
+package ie.cit.r00158694.soft8023.lab1.javafx;
 
-import ie.cit.r00158694.soft8023.lab1.controller.ServerController;
-import ie.cit.r00158694.soft8023.lab1.model.monitor.ResourceMonitor;
+import ie.cit.r00158694.soft8023.lab1.javafx.controller.ServerController;
+import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,13 +21,13 @@ import java.util.ResourceBundle;
 
 public class MainFX extends Application {
 
-	private static final ResourceBundle resources = ResourceBundle.getBundle("ie.cit.r00158694.soft8023.lab1.assets.i18n.lang");
+	private static final ResourceBundle resources = ResourceBundle.getBundle("ie.cit.r00158694.soft8023.lab1.javafx.assets.lang");
 
 	@Override
 	public void start(Stage primaryStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/view/Server.fxml"));
+			loader.setLocation(getClass().getResource("/ie/cit/r00158694/soft8023/lab1/javafx/view/Server.fxml"));
 			loader.setResources(resources);
 
 			Parent root = loader.load();

@@ -16,28 +16,18 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <BorderPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ie.cit.r00158694.soft8023.lab1.controller.AddFileController">
+            fx:controller="ie.cit.r00158694.soft8023.lab1.javafx.controller.AddClientController">
     <center>
         <VBox spacing="5.0" BorderPane.alignment="CENTER">
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </padding>
-            <VBox layoutX="15.0" layoutY="15.0" spacing="5.0">
-                <padding>
-                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                </padding>
-                <Label text="%file.path"/>
-                <HBox spacing="5.0">
-                    <TextField fx:id="txtFilePath" prefColumnCount="25"/>
-                    <Button mnemonicParsing="false" onAction="#chooseFile" text="..."/>
-                </HBox>
-            </VBox>
             <VBox spacing="5.0">
                 <padding>
                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                 </padding>
-                <Label text="%file.name"/>
-                <TextField fx:id="txtFileName" prefColumnCount="25"/>
+                <Label text="%client.name"/>
+                <TextField fx:id="txtClientName" prefColumnCount="20"/>
             </VBox>
         </VBox>
     </center>

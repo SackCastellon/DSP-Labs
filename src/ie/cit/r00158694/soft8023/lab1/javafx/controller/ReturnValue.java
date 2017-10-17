@@ -5,7 +5,7 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.lab1.controller;
+package ie.cit.r00158694.soft8023.lab1.javafx.controller;
 
 import java.util.Optional;
 
