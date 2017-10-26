@@ -7,9 +7,8 @@
 
 package ie.cit.r00158694.soft8023.lab1.javafx.controller;
 
-import ie.cit.r00158694.soft8023.lab1.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.AbstractClient;
 import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
-
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
@@ -35,7 +34,7 @@ public class ServerController {
 	private ResourceBundle resources;
 
 	@FXML
-	private ListView<Client> listClients;
+	private ListView<AbstractClient> listClients;
 
 	@FXML
 	private Button btnAddClient;
@@ -48,7 +47,7 @@ public class ServerController {
 
 	private ResourceMonitor monitor;
 
-	private final Map<Client, Stage> clientStageMap = new HashMap<>();
+	private final Map<AbstractClient, Stage> clientStageMap = new HashMap<>();
 
 	@FXML
 	void initialize() {
@@ -93,7 +92,7 @@ public class ServerController {
 
 	@FXML
 	void removeClient(ActionEvent event) {
-		Client client = listClients.getSelectionModel().getSelectedItem();
+		AbstractClient client = listClients.getSelectionModel().getSelectedItem();
 
 		if (clientStageMap.containsKey(client)) clientStageMap.remove(client).close();
 
@@ -103,7 +102,7 @@ public class ServerController {
 
 	@FXML
 	void viewClient(ActionEvent event) {
-		Client client = listClients.getSelectionModel().getSelectedItem();
+		AbstractClient client = listClients.getSelectionModel().getSelectedItem();
 
 		if (clientStageMap.containsKey(client)) {
 			clientStageMap.get(client).requestFocus();
@@ -141,9 +140,9 @@ public class ServerController {
 		listClients.getItems().setAll(resourceMonitor.getClients());
 	}
 
-	private static class ClientListCell extends ListCell<Client> {
+	private static class ClientListCell extends ListCell<AbstractClient> {
 		@Override
-		protected void updateItem(Client item, boolean empty) {
+		protected void updateItem(AbstractClient item, boolean empty) {
 			super.updateItem(item, empty);
 			if (!empty) setText(item.getClientName());
 			else setText("");

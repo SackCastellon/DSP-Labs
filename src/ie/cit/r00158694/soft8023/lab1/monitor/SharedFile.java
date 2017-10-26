@@ -13,9 +13,13 @@ public class SharedFile implements Comparable<SharedFile> {
 		this.name = name;
 	}
 
-	public File getFile() { return file; }
+	public File getFile() {
+		return file;
+	}
 
-	public String getName() { return name; }
+	public String getName() {
+		return name;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -26,11 +30,17 @@ public class SharedFile implements Comparable<SharedFile> {
 	}
 
 	@Override
-	public int hashCode() { return Objects.hash(getFile(), getName()); }
+	public int hashCode() {
+		return Objects.hash(getFile(), getName());
+	}
 
 	@Override
-	public String toString() { return "SharedFile{" + "file=" + file + ", name='" + name + '\'' + '}'; }
+	public String toString() {
+		return "SharedFile{" + "file=" + file + ", name='" + name + '\'' + '}';
+	}
 
 	@Override
-	public int compareTo(SharedFile o) { return name.compareToIgnoreCase(o.name); }
+	public int compareTo(SharedFile o) {
+		return name.compareToIgnoreCase(o.name);
+	}
 }

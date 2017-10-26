@@ -7,7 +7,7 @@
 
 package ie.cit.r00158694.soft8023.lab1;
 
-import ie.cit.r00158694.soft8023.lab1.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.AbstractClient;
 import ie.cit.r00158694.soft8023.lab1.client.FullClient;
 import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
 
@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-	private static final Map<String, Client> CLIENTS = new HashMap<>();
-	private static final Map<Client, List<Runnable>> CLIENT_TASKS = new HashMap<>();
+	private static final Map<String, AbstractClient> CLIENTS = new HashMap<>();
+	private static final Map<AbstractClient, List<Runnable>> CLIENT_TASKS = new HashMap<>();
 	private static final ResourceMonitor RESOURCE_MONITOR = ResourceMonitor.getInstance();
 
 	public static void main(String[] args) throws Exception {
@@ -42,7 +42,7 @@ public class Main {
 
 		// First we read the file and save every action for every client
 		while (scanner.hasNextLine() && scanner.hasNext()) {
-			Client client = CLIENTS.get(scanner.next());
+			AbstractClient client = CLIENTS.get(scanner.next());
 			List<Runnable> tasks = CLIENT_TASKS.get(client);
 
 			switch (scanner.next()) {

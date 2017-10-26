@@ -7,10 +7,9 @@
 
 package ie.cit.r00158694.soft8023.lab1.javafx.controller;
 
-import ie.cit.r00158694.soft8023.lab1.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.AbstractClient;
 import ie.cit.r00158694.soft8023.lab1.client.FullClient;
 import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -20,7 +19,7 @@ import javafx.stage.Stage;
 
 import java.util.Optional;
 
-public class AddClientController implements ReturnValue<Client> {
+public class AddClientController implements ReturnValue<AbstractClient> {
 
 	@FXML
 	private TextField txtClientName;
@@ -28,7 +27,7 @@ public class AddClientController implements ReturnValue<Client> {
 	@FXML
 	private Button btnSave;
 
-	private Client client;
+	private AbstractClient client;
 	private ResourceMonitor ResourceMonitor;
 
 	@FXML
@@ -54,7 +53,11 @@ public class AddClientController implements ReturnValue<Client> {
 	}
 
 	@Override
-	public Optional<Client> getReturnValue() { return Optional.ofNullable(client); }
+	public Optional<AbstractClient> getReturnValue() {
+		return Optional.ofNullable(client);
+	}
 
-	public void setResourceMonitor(ResourceMonitor ResourceMonitor) { this.ResourceMonitor = ResourceMonitor; }
+	public void setResourceMonitor(ResourceMonitor ResourceMonitor) {
+		this.ResourceMonitor = ResourceMonitor;
+	}
 }

@@ -7,10 +7,9 @@
 
 package ie.cit.r00158694.soft8023.lab1.javafx.controller;
 
-import ie.cit.r00158694.soft8023.lab1.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.AbstractClient;
 import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
 import ie.cit.r00158694.soft8023.lab1.monitor.SharedFile;
-
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -64,7 +63,7 @@ public class ViewClientController {
 	private TextArea txtLog;
 
 	private ResourceMonitor resourceMonitor;
-	private Client client;
+	private AbstractClient client;
 
 	@FXML
 	void initialize() {
@@ -78,7 +77,7 @@ public class ViewClientController {
 			SimpleStringProperty property = new SimpleStringProperty();
 			if (resourceMonitor.getLockedFiles().containsValue(param.getValue().getName())) {
 				String clientsLockingFile =
-						resourceMonitor.getLockedFiles().entrySet().stream().filter(entry -> entry.getValue().equals(param.getValue().getName())).map(Entry::getKey).map(Client::getClientName).sorted()
+						resourceMonitor.getLockedFiles().entrySet().stream().filter(entry -> entry.getValue().equals(param.getValue().getName())).map(Entry::getKey).map(AbstractClient::getClientName).sorted()
 								.reduce((s, s2) -> s + ", " + s2).orElse("");
 				property.setValue(String.format(resources.getString("file.status.locked"), clientsLockingFile));
 			} else {
@@ -146,7 +145,7 @@ public class ViewClientController {
 		tableFiles.getItems().setAll(resourceMonitor.getFiles());
 	}
 
-	public void setClient(Client client) {
+	public void setClient(AbstractClient client) {
 		this.client = client;
 		txtLog.setText("     −=≡ This client has subscribed to the Resource Monitor ≡=−");
 		client.setOnUpdate(event -> {

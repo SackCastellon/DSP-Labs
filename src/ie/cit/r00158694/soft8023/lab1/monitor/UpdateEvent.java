@@ -7,18 +7,18 @@
 
 package ie.cit.r00158694.soft8023.lab1.monitor;
 
-import ie.cit.r00158694.soft8023.lab1.client.Client;
+import ie.cit.r00158694.soft8023.lab1.client.AbstractClient;
 
 import java.util.Date;
 
 public class UpdateEvent {
 
-	private final Client client;
+	private final AbstractClient client;
 	private final Action action;
 	private final String fileName;
 	private final Date time;
 
-	public UpdateEvent(Client client, Action action, String fileName) {
+	public UpdateEvent(AbstractClient client, Action action, String fileName) {
 		this.client = client;
 		this.action = action;
 		this.fileName = fileName;
@@ -30,28 +30,36 @@ public class UpdateEvent {
 	 *
 	 * @return The client
 	 */
-	public Client getClient() { return client; }
+	public AbstractClient getClient() {
+		return client;
+	}
 
 	/**
 	 * Returns the action that the client executed to cause the update.
 	 *
 	 * @return The action
 	 */
-	public Action getAction() { return action; }
+	public Action getAction() {
+		return action;
+	}
 
 	/**
 	 * Returns the fileName over which the client executed the action to caused the update
 	 *
 	 * @return The fileName
 	 */
-	public String getFileName() { return fileName; }
+	public String getFileName() {
+		return fileName;
+	}
 
 	/**
 	 * Returns the date at which the client executed the action that caused the update
 	 *
 	 * @return The date
 	 */
-	public Date getDate() { return time; }
+	public Date getDate() {
+		return time;
+	}
 
 	public enum Action {
 
@@ -59,13 +67,17 @@ public class UpdateEvent {
 
 		private final String key;
 
-		Action(String key) { this.key = key; }
+		Action(String key) {
+			this.key = key;
+		}
 
 		/**
 		 * Returns the localization key used to translate this action text.
 		 *
 		 * @return The localization key
 		 */
-		public String getKey() { return key; }
+		public String getKey() {
+			return key;
+		}
 	}
 }

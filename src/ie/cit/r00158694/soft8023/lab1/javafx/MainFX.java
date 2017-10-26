@@ -9,7 +9,6 @@ package ie.cit.r00158694.soft8023.lab1.javafx;
 
 import ie.cit.r00158694.soft8023.lab1.javafx.controller.ServerController;
 import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -43,5 +42,7 @@ public class MainFX extends Application {
 		}
 	}
 
-	public static void main(String[] args) { launch(args); }
+	public static void main(String[] args) {
+		launch(args);
+	}
 }

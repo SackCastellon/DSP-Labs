@@ -11,7 +11,6 @@ import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
 import ie.cit.r00158694.soft8023.lab1.monitor.SharedFile;
 import ie.cit.r00158694.soft8023.lab1.monitor.UpdateEvent;
 import ie.cit.r00158694.soft8023.lab1.monitor.UpdateEvent.Action;
-
 import javafx.util.Pair;
 
 import java.io.File;
@@ -21,7 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public abstract class Client {
+public abstract class AbstractClient {
 
 	private final String clientName;
 	private final ResourceMonitor resourceMonitor;
@@ -30,29 +29,40 @@ public abstract class Client {
 
 	private final List<Pair<Action, String>> waitForFiles = new ArrayList<>();
 
-	public Client(String name, ResourceMonitor resourceMonitor) {
+	public AbstractClient(String name, ResourceMonitor resourceMonitor) {
 		this.clientName = name;
 		this.resourceMonitor = resourceMonitor;
 
 		resourceMonitor.addClient(this);
 	}
 
-	public String getClientName() { return clientName; }
+	public String getClientName() {
+		return clientName;
+	}
 
-	protected ResourceMonitor getResourceMonitor() { return resourceMonitor; }
+	protected ResourceMonitor getResourceMonitor() {
+		return resourceMonitor;
+	}
 
 	public final void sleep(TimeUnit timeUnit, long timeout) {
 		try {
 			System.out.printf("[%1$s] %1$s is going to sleep for %2$d %3$s\n", getClientName(), timeout, timeUnit.toString().toLowerCase());
 			timeUnit.sleep(timeout);
-		} catch (InterruptedException ignored) {}
+		} catch (InterruptedException ignored) {
+		}
 	}
 
-	public final boolean addFile(String filePath, String fileName) { return addFile(new SharedFile(new File(filePath), fileName)); }
+	public final boolean addFile(String filePath, String fileName) {
+		return addFile(new SharedFile(new File(filePath), fileName));
+	}
 
-	public boolean addFile(SharedFile file) { throw new UnsupportedOperationException("This client cannot add files"); }
+	public boolean addFile(SharedFile file) {
+		throw new UnsupportedOperationException("This client cannot add files");
+	}
 
-	protected boolean deleteFile(String file) { throw new UnsupportedOperationException("This client cannot delete files"); }
+	protected boolean deleteFile(String file) {
+		throw new UnsupportedOperationException("This client cannot delete files");
+	}
 
 	public boolean deleteFileAndSleep(String file) {
 		boolean b = deleteFile(file);
@@ -60,7 +70,9 @@ public abstract class Client {
 		return b;
 	}
 
-	protected boolean readFile(String file) { throw new UnsupportedOperationException("This client cannot read files"); }
+	protected boolean readFile(String file) {
+		throw new UnsupportedOperationException("This client cannot read files");
+	}
 
 	public final boolean readFileAndSleep(String file) {
 		boolean b = readFile(file);
@@ -68,9 +80,13 @@ public abstract class Client {
 		return b;
 	}
 
-	public final boolean readFileAndDiscard(String file) { return readFile(file); }
+	public final boolean readFileAndDiscard(String file) {
+		return readFile(file);
+	}
 
-	public final boolean releaseFile(String file) { return getResourceMonitor().releaseFile(this, file); }
+	public final boolean releaseFile(String file) {
+		return getResourceMonitor().releaseFile(this, file);
+	}
 
 	public void update(UpdateEvent event) {
 		System.out.printf("[%s] %s -> %s -> %s\n", clientName, event.getClient().getClientName(), event.getAction(), event.getFileName());
@@ -94,7 +110,9 @@ public abstract class Client {
 		}
 	}
 
-	public final void setOnUpdate(Consumer<UpdateEvent> consumer) { this.consumer = consumer; }
+	public final void setOnUpdate(Consumer<UpdateEvent> consumer) {
+		this.consumer = consumer;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -105,8 +123,12 @@ public abstract class Client {
 	}
 
 	@Override
-	public int hashCode() { return Objects.hash(clientName); }
+	public int hashCode() {
+		return Objects.hash(clientName);
+	}
 
 	@Override
-	public String toString() { return "Client: " + clientName; }
+	public String toString() {
+		return "AbstractClient: " + clientName;
+	}
 }

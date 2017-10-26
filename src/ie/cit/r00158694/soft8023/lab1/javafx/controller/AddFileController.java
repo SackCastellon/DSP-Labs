@@ -9,7 +9,6 @@ package ie.cit.r00158694.soft8023.lab1.javafx.controller;
 
 import ie.cit.r00158694.soft8023.lab1.monitor.ResourceMonitor;
 import ie.cit.r00158694.soft8023.lab1.monitor.SharedFile;
-
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -74,7 +73,11 @@ public class AddFileController implements ReturnValue<SharedFile> {
 	}
 
 	@Override
-	public Optional<SharedFile> getReturnValue() { return Optional.ofNullable(sharedFile); }
+	public Optional<SharedFile> getReturnValue() {
+		return Optional.ofNullable(sharedFile);
+	}
 
-	public void setMonitor(ResourceMonitor monitor) { this.monitor = monitor; }
+	public void setMonitor(ResourceMonitor monitor) {
+		this.monitor = monitor;
+	}
 }
