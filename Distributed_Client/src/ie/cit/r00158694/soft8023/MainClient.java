@@ -37,14 +37,15 @@ public class MainClient {
 	private static final String SERVER_HOST = "localhost";
 
 	public static void main(String[] args) {
-		if (args.length != 1) {
-			System.err.println("Expected 1 argument: <client_name>");
+		if (args.length != 2) {
+			System.err.println("Expected 2 argument: <client_name> <actions_file_path>");
 			System.exit(1);
 		}
 
 		String clientName = args[0];
+		String actionsFilePath = args[1];
 
-		final LinkedList<Consumer<AbstractClient>> actions = getActions(clientName);
+		final LinkedList<Consumer<AbstractClient>> actions = getActions(clientName, actionsFilePath);
 		final AbstractClient client = new FullClient(clientName);
 
 		try (Socket server = new Socket(SERVER_HOST, SERVER_PORT);
@@ -79,10 +80,10 @@ public class MainClient {
 		}
 	}
 
-	private static LinkedList<Consumer<AbstractClient>> getActions(String clientName) {
+	private static LinkedList<Consumer<AbstractClient>> getActions(String clientName, String actionsFilePath) {
 		LinkedList<Consumer<AbstractClient>> actions = new LinkedList<>();
 
-		try (Scanner scanner = new Scanner(new File("input.txt"))) {
+		try (Scanner scanner = new Scanner(new File(actionsFilePath))) {
 			boolean existsClient = false;
 			for (int i = 0, j = scanner.nextInt(); i < j; i++) existsClient |= clientName.equals(scanner.next());
 			if (!existsClient)
