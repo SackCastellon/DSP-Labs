@@ -5,8 +5,11 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.client;
+package ie.cit.r00158694.soft8023;
 
+import ie.cit.r00158694.soft8023.client.AbstractClient;
+import ie.cit.r00158694.soft8023.client.ClientNotFoundException;
+import ie.cit.r00158694.soft8023.client.FullClient;
 import ie.cit.r00158694.soft8023.common.IMonitor;
 import ie.cit.r00158694.soft8023.common.UpdateEvent;
 
@@ -19,6 +22,8 @@ import java.net.Socket;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +54,7 @@ public class MainClient {
 			Registry registry = LocateRegistry.getRegistry(REGISTRY_PORT);
 			IMonitor monitor = (IMonitor) registry.lookup(RESOURCE_MONITOR);
 
-			System.out.printf("Connected to server on %s\n", server.getInetAddress());
+			System.out.printf("[%s] [%s] Connected to server on %s\n", getTime(), clientName, server.getInetAddress());
 			toServer.writeUTF(client.getName());
 			client.setId(fromServer.readUTF());
 			client.setMonitor(monitor);
@@ -128,5 +133,9 @@ public class MainClient {
 			System.err.println(e.getMessage());
 		}
 		return actions;
+	}
+
+	public static String getTime() {
+		return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
 	}
 }

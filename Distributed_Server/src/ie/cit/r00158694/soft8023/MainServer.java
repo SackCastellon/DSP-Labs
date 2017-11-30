@@ -5,9 +5,10 @@
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
  */
 
-package ie.cit.r00158694.soft8023.server;
+package ie.cit.r00158694.soft8023;
 
 import ie.cit.r00158694.soft8023.common.UpdateEvent;
+import ie.cit.r00158694.soft8023.server.ResourceMonitor;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,6 +17,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,7 +36,7 @@ public class MainServer {
 	private static boolean isRunning = true;
 
 	public static void main(String[] args) {
-		System.out.println("[Server] Server starting");
+		System.out.printf("[%s] [Server] Server starting\n", getTime());
 		ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactory() {
 			private int i = 0;
 
@@ -45,29 +48,34 @@ public class MainServer {
 			}
 		});
 		try (ServerSocket server = new ServerSocket(SERVER_PORT)) {
-			System.out.println("[Server] Server started");
+			System.out.printf("[%s] [Server] Server started\n", getTime());
 
 			resourceMonitor = ResourceMonitor.getInstance();
 			Registry registry = LocateRegistry.createRegistry(REGISTRY_PORT);
 			registry.rebind(RESOURCE_MONITOR, resourceMonitor);
 
 			while (isRunning) {
-				System.out.println("[Server] Waiting for a new client");
+				System.out.printf("[%s] [Server] Waiting for a new client\n", getTime());
 				exec.execute(new ClientThread(server.accept()));
 			}
 
-			System.out.println("[Server] Server stopping");
-			System.out.println("[Server] No longer waiting for new clients");
+			System.out.printf("[%s] [Server] Server stopping\n", getTime());
+			System.out.printf("[%s] [Server] No longer waiting for new clients\n", getTime());
 			exec.shutdown();
-			System.out.println("[Server] Awaiting for termination of all client threads");
+			System.out.printf("[%s] [Server] Awaiting for termination of all client threads\n", getTime());
 			boolean terminated = exec.awaitTermination(5, TimeUnit.SECONDS);
-			if (terminated) System.out.println("[Server-Thread] All client threads terminated correctly");
-			else System.out.println("[Server] Timeout before termination all client threads");
+			if (terminated)
+				System.out.printf("[%s] [Server-Thread] All client threads terminated correctly\n", getTime());
+			else System.out.printf("[%s] [Server] Timeout before termination all client threads\n", getTime());
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			System.out.println("[Server] Server stopped");
+			System.out.printf("[%s] [Server] Server stopped\n", getTime());
 		}
+	}
+
+	public static String getTime() {
+		return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
 	}
 
 	private static class ClientThread implements Runnable {
@@ -80,7 +88,7 @@ public class MainServer {
 
 		@Override
 		public void run() {
-			System.out.printf("[%s] Client thread starting\n", Thread.currentThread().getName());
+			System.out.printf("[%s] [%s] Client thread starting\n", getTime(), Thread.currentThread().getName());
 
 			final LinkedList<UpdateEvent> notifications = new LinkedList<>();
 
@@ -88,11 +96,11 @@ public class MainServer {
 
 			try (DataInputStream fromClient = new DataInputStream(client.getInputStream());
 				 DataOutputStream toClient = new DataOutputStream(client.getOutputStream())) {
-				System.out.printf("[%s] Client thread started\n", Thread.currentThread().getName());
+				System.out.printf("[%s] [%s] Client thread started\n", getTime(), Thread.currentThread().getName());
 				String clientName = fromClient.readUTF();
-				System.out.printf("[%s] Client '%s' connected to server from %s\n", Thread.currentThread().getName(), clientName, client.getInetAddress());
+				System.out.printf("[%s] [%s] Client '%s' connected to server from %s\n", getTime(), Thread.currentThread().getName(), clientName, client.getInetAddress());
 				clientId = resourceMonitor.addClient(clientName, notifications);
-				System.out.printf("[%s] Assigned ID #%s to client '%s'\n", Thread.currentThread().getName(), clientId, clientName);
+				System.out.printf("[%s] [%s] Assigned ID #%s to client '%s'\n", getTime(), Thread.currentThread().getName(), clientId, clientName);
 				toClient.writeUTF(clientId);
 
 				while (isRunning) {
@@ -105,15 +113,15 @@ public class MainServer {
 					}
 				}
 
-				System.out.printf("[%s] Client thread stopping\n", Thread.currentThread().getName());
+				System.out.printf("[%s] [%s] Client thread stopping\n", getTime(), Thread.currentThread().getName());
 				toClient.writeBoolean(false); // Tell client to stop
 				fromClient.read(); // Wait for client to disconnect TODO Check
 			} catch (IOException e) {
 //				e.printStackTrace();
-				System.out.printf("[%s] Client disconnected\n", Thread.currentThread().getName());
+				System.out.printf("[%s] [%s] Client disconnected\n", getTime(), Thread.currentThread().getName());
 			} finally {
 				resourceMonitor.removeClient(clientId);
-				System.out.printf("[%s] Client thread stopped\n", Thread.currentThread().getName());
+				System.out.printf("[%s] [%s] Client thread stopped\n", getTime(), Thread.currentThread().getName());
 			}
 		}
 	}

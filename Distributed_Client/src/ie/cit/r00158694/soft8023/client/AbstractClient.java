@@ -7,6 +7,7 @@
 
 package ie.cit.r00158694.soft8023.client;
 
+import ie.cit.r00158694.soft8023.MainClient;
 import ie.cit.r00158694.soft8023.common.IMonitor;
 import ie.cit.r00158694.soft8023.common.SharedFile;
 import ie.cit.r00158694.soft8023.common.UpdateEvent;
@@ -58,7 +59,9 @@ public abstract class AbstractClient {
 	}
 
 	public final void sleep(TimeUnit timeUnit, long timeout) {
-		try { timeUnit.sleep(timeout); } catch (InterruptedException ignored) { }
+		try {
+			System.out.printf("[%s] [%s] Sleeping for %d %s\n", MainClient.getTime(), getName(), timeout, timeUnit.toString());
+			timeUnit.sleep(timeout); } catch (InterruptedException ignored) { }
 	}
 
 	public final boolean addFile(String filePath, String fileName) {
@@ -74,6 +77,7 @@ public abstract class AbstractClient {
 	}
 
 	public final boolean deleteFileAndSleep(String file) {
+		System.out.printf("[%s] [%s] Deleting file '%s' and sleeping\n", MainClient.getTime(), getName(), file);
 		boolean deleted = deleteFile(file);
 		if (!deleted) waitForFiles.add(new Pair<>(DELETE, file));
 		return deleted;
@@ -84,12 +88,14 @@ public abstract class AbstractClient {
 	}
 
 	public final boolean readFileAndSleep(String file) {
+		System.out.printf("[%s] [%s] Reading file '%s' and sleeping\n", MainClient.getTime(), getName(), file);
 		boolean read = readFile(file);
 		if (!read) waitForFiles.add(new Pair<>(READ, file));
 		return read;
 	}
 
 	public final boolean readFileAndDiscard(String file) {
+		System.out.printf("[%s] [%s] Reading file '%s' and discarding\n", MainClient.getTime(), getName(), file);
 		return readFile(file);
 	}
 
